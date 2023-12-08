@@ -1,0 +1,17 @@
+name: Test hex2raw
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+
+      - name: Build
+        run: make build
+
+      - name: Test
+        run: |
+          ./hex2raw -i tests/test-normal.txt -o output/test-normal.txt.new
+          ./hex2raw-old -i tests/test-normal.txt -o output/test-normal.txt.old
+          diff output/test-normal.txt.new output/test-normal.txt.old
