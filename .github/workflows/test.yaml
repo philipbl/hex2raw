@@ -6,7 +6,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Install go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: Set up Python for testing
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
