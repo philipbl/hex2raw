@@ -5,13 +5,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
 
-      - name: Build
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Building executables
         run: make build
 
-      - name: Test
+      - name: Run tests
         run: |
-          ./hex2raw -i tests/test-normal.txt -o output/test-normal.txt.new
-          ./hex2raw-old -i tests/test-normal.txt -o output/test-normal.txt.old
-          diff output/test-normal.txt.new output/test-normal.txt.old
+          pip install pytest
+          make test

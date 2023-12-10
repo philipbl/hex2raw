@@ -46,15 +46,35 @@ func main() {
 		outputWriter = os.Stdout
 	}
 
+	var builder strings.Builder
+
 	scanner := bufio.NewScanner(inputReader)
 	for scanner.Scan() {
 		line := scanner.Text()
-		line = removeComments(line)
-		line = strings.ReplaceAll(line, " ", "")
+
+		// Check to see if there is a comment. If there is we will collect the
+		// whole thing and remove it.
+		if strings.Contains(line, "/*") {
+			builder.WriteString(line)
+
+			// Keep looking for the end of the comment
+			for !strings.Contains(line, "*/") {
+				scanner.Scan()
+				line = scanner.Text()
+				builder.WriteString(line)
+			}
+			line = builder.String()
+		}
+
+		line = removeMultiLineComments(line)
+		line = removeSingleLineComments(line)
+		line = strings.TrimSpace(line)
 
 		if len(line) == 0 {
 			continue
 		}
+
+		line = strings.ReplaceAll(line, " ", "")
 
 		decoded, err := hex.DecodeString(line)
 		if err != nil {
@@ -73,9 +93,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading input: %s\n", err)
 		os.Exit(1)
 	}
+
+	// The old hex2raw always adds a newline to the end of the file
+	fmt.Fprint(outputWriter, "\n")
 }
 
-func removeComments(line string) string {
+func removeMultiLineComments(line string) string {
 	re := regexp.MustCompile(`/\*.*?\*/`)
+	return re.ReplaceAllString(line, "")
+}
+
+func removeSingleLineComments(line string) string {
+	re := regexp.MustCompile(`\/\/.*$`)
 	return re.ReplaceAllString(line, "")
 }
