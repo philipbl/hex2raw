@@ -82,7 +82,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		_, err = fmt.Fprint(outputWriter, string(decoded))
+		decoded_string := string(decoded)
+
+		if strings.Contains(decoded_string, "\n") {
+			fmt.Fprintln(os.Stderr, "Warning: Output contains newline byte `0a`. This will cause the `Gets` function to return early and not read in your whole input.")
+		}
+
+		_, err = fmt.Fprint(outputWriter, decoded_string)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing to output: %s\n", err)
 			os.Exit(1)
