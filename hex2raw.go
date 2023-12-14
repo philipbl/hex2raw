@@ -11,14 +11,31 @@ import (
 	"strings"
 )
 
+const appVersion = "1.2.0"
+
 func main() {
 	var inputFile, outputFile string
+	var version bool
 
-	flag.StringVar(&inputFile, "i", "", "Input file path")
-	flag.StringVar(&outputFile, "o", "", "Output file path")
+	flag.StringVar(&inputFile, "i", "", "Input file path. Default is stdin.")
+	flag.StringVar(&outputFile, "o", "", "Output file path. Default is stdout.")
+	flag.BoolVar(&version, "version", false, "Print the version of the program.")
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Println("\nExamples:")
+		fmt.Println("  hex2raw -i input.txt -o output.txt")
+		fmt.Println("  hex2raw --version")
+		fmt.Println("  cat input.txt | hex2raw > output.txt")
+	}
 	flag.Parse()
 
 	var inputReader io.Reader
+
+	if version {
+		fmt.Println("hex2raw version", appVersion)
+		return
+	}
 
 	if inputFile != "" {
 		file, err := os.Open(inputFile)
