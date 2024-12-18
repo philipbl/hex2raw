@@ -1,0 +1,2 @@
+74 68 69 73 20 69 73 20 // This is a 
+61 20 74 65 73 74       // new type of comment

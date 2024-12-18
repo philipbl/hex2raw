@@ -81,6 +81,7 @@ func main() {
 				builder.WriteString(line)
 			}
 			line = builder.String()
+			builder.Reset()
 		}
 
 		line = removeMultiLineComments(line)
