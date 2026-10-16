@@ -1,0 +1,5 @@
+/* Commented out an earlier attempt:
+48 c7 c7 fa 97 b9 59 /* mov $0x59b997fa,%rdi */
+c3                   /* ret */
+*/
+48 c7 c7 7c 1e 65 20 c3
