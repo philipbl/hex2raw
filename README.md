@@ -12,9 +12,11 @@ This is a re-implementation of the hex2raw C program written for the CS:APP Atta
 
 - Prints out warning if hex string includes `0a` byte. This causes problems in the attack labs because it causes the `Gets` function to terminate early.
 
-- Error messages include the line number, and an unclosed `/*` comment is reported instead of silently eating the rest of the file.
+- Error messages include the line number, and an unclosed `/*` comment is reported instead of silently eating the rest of the file. All errors and warnings go to stderr, so students see them even when the output is redirected to a file or piped into `ctarget`.
 
-- If there are any errors, nothing is written. A typo will never leave a partial output file or overwrite a good one, and it refuses to write the output over the input file.
+- If there are any errors, nothing is written, and the last message says so. A typo will never leave a partial output file or overwrite a good one, and it refuses to write the output over the input file. It also warns if the input has no hex bytes at all, for example because it is all commented out.
+
+See [CHANGELOG.md](CHANGELOG.md) for the changes in each version.
 
 ## Usage
 
