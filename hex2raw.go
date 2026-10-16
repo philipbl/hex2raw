@@ -227,8 +227,10 @@ func convert(data []byte, msgs io.Writer) (output []byte, ok bool) {
 		}
 	}
 
+	// Nothing is written when there are errors, so say so. Otherwise a student
+	// piping into ctarget only sees ctarget fail on empty input.
 	if c.errors >= maxErrors {
-		fmt.Fprintln(msgs, "Too many errors, stopping.")
+		fmt.Fprintf(msgs, "hex2raw: stopped after %d errors. No output was written.\n", c.errors)
 		return nil, false
 	}
 
@@ -236,10 +238,19 @@ func convert(data []byte, msgs io.Writer) (output []byte, ok bool) {
 	if c.commentDepth > 0 {
 		c.errorf(c.commentLine, "this /* comment is never closed with */ (comments nest, so each /* needs its own */)")
 	}
-	if c.errors > 0 {
+	switch c.errors {
+	case 0:
+	case 1:
+		fmt.Fprintln(msgs, "hex2raw: no output was written because of the error above.")
+		return nil, false
+	default:
+		fmt.Fprintf(msgs, "hex2raw: no output was written because of the %d errors above.\n", c.errors)
 		return nil, false
 	}
 
+	if len(c.output) == 0 {
+		fmt.Fprintln(msgs, "Warning: no hex bytes were found in the input (is it all commented out?), so the output is just a newline.")
+	}
 	if len(c.newlineLines) > 0 {
 		fmt.Fprintf(msgs, "Warning: Output contains newline byte `0a` (%s). This will cause the `Gets` function to return early and not read in your whole input.\n", formatLines(c.newlineLines))
 	}

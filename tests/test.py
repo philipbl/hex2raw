@@ -192,6 +192,14 @@ def test_errors(data, message):
     # Nothing is written if there is an error, even for the lines that were fine
     assert result.stdout == b""
     assert message in result.stderr
+    assert result.stderr.endswith(b"no output was written because of the error above.\n")
+
+
+def test_error_count():
+    result = run_hex2raw(b"zz\n48\nzz\n")
+
+    assert result.returncode == 1
+    assert result.stderr.endswith(b"no output was written because of the 2 errors above.\n")
 
 
 def test_too_many_errors():
@@ -199,7 +207,16 @@ def test_too_many_errors():
 
     assert result.returncode == 1
     assert result.stderr.count(b"Error") == 10
-    assert b"Too many errors" in result.stderr
+    assert result.stderr.endswith(b"stopped after 10 errors. No output was written.\n")
+
+
+@pytest.mark.parametrize("data", [b"", b"\n\n", b"// 48 c7\n", b"/*\n48 c7\n*/\n"])
+def test_no_bytes_warns(data):
+    result = run_hex2raw(data)
+
+    assert result.returncode == 0
+    assert result.stdout == b"\n"
+    assert result.stderr.startswith(b"Warning: no hex bytes were found")
 
 
 def test_byte_order_mark():
@@ -260,6 +277,28 @@ def test_output_is_input(exploit):
         result = run([NEW_HEX2RAW, "-o", str(exploit)], stdin=stdin, stdout=PIPE, stderr=PIPE, timeout=TIMEOUT)
     assert result.returncode == 1
     assert exploit.read_bytes() == b"48 c7 c3\n"
+
+
+@pytest.mark.parametrize(
+    "data, args",
+    [
+        (b"zz\n", []),
+        (b"/* unclosed\n", []),
+        (b"48 */\n", []),
+        (b"48 c\n", []),
+        (b"", ["does-not-exist.txt"]),
+        (b"", ["a.txt", "b.txt"]),
+        (b"", ["-x"]),
+    ],
+)
+def test_problems_are_reported_on_stderr(data, args):
+    # Students need to see what went wrong even when stdout is redirected to a
+    # file or piped into ctarget
+    result = run_hex2raw(data, *args)
+
+    assert result.returncode != 0
+    assert result.stdout == b""
+    assert result.stderr != b""
 
 
 def test_output_file_untouched_on_error(tmp_path):
