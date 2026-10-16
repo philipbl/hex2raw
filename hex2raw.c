@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     FILE *infile = stdin;
     int outfd = STDOUT_FILENO;
 
-    char c;
+    int c;
 
     while ((c = getopt(argc, argv, "hi:o:")) != -1) {
         switch (c) {
