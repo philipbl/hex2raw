@@ -1,0 +1,3 @@
+/* a */ 48 c7 /* a comment that
+continues */ c3 /* and another
+one */ 00
